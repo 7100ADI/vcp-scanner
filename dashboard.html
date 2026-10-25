@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global VCP Breakout Ranking - Top 12 Elite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: { 
+                    colors: { 
+                        darkbg: '#0b0f17', 
+                        cardbg: '#151d2a',
+                        bordercolor: '#222f43'
+                    } 
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    </style>
+</head>
+<body class="bg-darkbg text-gray-100 min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-bordercolor gap-4">
+            <div>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-emerald-400 tracking-wide">🏆 Global VCP Elite Ranking</h1>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Top 12</span>
+                </div>
+                <p class="text-gray-400 text-xs md:text-sm mt-1">Institutionelle Ausbruchs-Muster & Volumendynamik (Klick auf Ticker öffnet TradingView Chart)</p>
+            </div>
+            <div id="stats-box" class="bg-cardbg px-4 py-2.5 rounded-xl border border-bordercolor text-xs md:text-sm text-gray-300 flex items-center gap-3">
+                <span>Lade Daten...</span>
+            </div>
+        </header>
+
+        <div class="bg-cardbg rounded-xl border border-bordercolor overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-900/80 text-gray-400 text-xs uppercase tracking-wider border-b border-bordercolor">
+                            <th class="p-4">Rang</th>
+                            <th class="p-4">Region</th>
+                            <th class="p-4">Ticker (Chart Link)</th>
+                            <th class="p-4">Kurs</th>
+                            <th class="p-4">VCP Spanne (20D)</th>
+                            <th class="p-4">52W-Hoch Abstand</th>
+                            <th class="p-4">Volumen-Power</th>
+                            <th class="p-4 text-right">Trend (5T)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTableBody" class="divide-y divide-bordercolor text-sm"></tbody>
+                </table>
+            </div>
+        </div>
+        <footer class="mt-4 text-center md:text-right text-xs text-gray-500">
+            Automatische Aktualisierung via Python & GitHub Actions | Datenquelle: Yahoo Finance
+        </footer>
+    </div>
+
+    <script>
+        const stocksData = [
+  {
+    "rank": 1,
+    "score": 104.39,
+    "ticker": "TECH",
+    "region": "USA",
+    "price": 72.55,
+    "vcp": 0.36,
+    "highDist": -0.12,
+    "volRatio": 0.66,
+    "history": [
+      72.49,
+      72.58,
+      72.64,
+      72.62,
+      72.55
+    ]
+  },
+  {
+    "rank": 2,
+    "score": 98.31,
+    "ticker": "9432.T",
+    "region": "JAPAN",
+    "price": 174.8,
+    "vcp": 4.83,
+    "highDist": -1.85,
+    "volRatio": 1.34,
+    "history": [
+      175.1,
+      177.1,
+      176.2,
+      178.1,
+      174.8
+    ]
+  },
+  {
+    "rank": 3,
+    "score": 96.57,
+    "ticker": "AAPL",
+    "region": "USA",
+    "price": 347.73,
+    "vcp": 5.71,
+    "highDist": -0.14,
+    "volRatio": 1.03,
+    "history": [
+      342.94,
+      339.5,
+      343.99,
+      348.22,
+      347.73
+    ]
+  },
+  {
+    "rank": 4,
+    "score": 96.18,
+    "ticker": "EMR",
+    "region": "USA",
+    "price": 161.59,
+    "vcp": 5.42,
+    "highDist": -1.36,
+    "volRatio": 1.13,
+    "history": [
+      160.54,
+      160.46,
+      163.11,
+      160.29,
+      161.59
+    ]
+  },
+  {
+    "rank": 5,
+    "score": 94.35,
+    "ticker": "ZBRA",
+    "region": "USA",
+    "price": 386.45,
+    "vcp": 5.96,
+    "highDist": -1.16,
+    "volRatio": 1.0,
+    "history": [
+      375.77,
+      384.08,
+      391.0,
+      384.16,
+      386.45
+    ]
+  },
+  {
+    "rank": 6,
+    "score": 94.16,
+    "ticker": "MSI",
+    "region": "USA",
+    "price": 481.83,
+    "vcp": 8.48,
+    "highDist": -1.66,
+    "volRatio": 1.7,
+    "history": [
+      458.9,
+      463.46,
+      467.5,
+      477.81,
+      481.83
+    ]
+  },
+  {
+    "rank": 7,
+    "score": 93.54,
+    "ticker": "WST",
+    "region": "USA",
+    "price": 392.15,
+    "vcp": 8.47,
+    "highDist": -0.48,
+    "volRatio": 1.4,
+    "history": [
+      383.91,
+      388.78,
+      393.48,
+      394.03,
+      392.15
+    ]
+  },
+  {
+    "rank": 8,
+    "score": 91.82,
+    "ticker": "IEX",
+    "region": "USA",
+    "price": 229.05,
+    "vcp": 5.17,
+    "highDist": -4.47,
+    "volRatio": 1.11,
+    "history": [
+      233.86,
+      233.16,
+      235.43,
+      226.88,
+      229.05
+    ]
+  },
+  {
+    "rank": 9,
+    "score": 91.8,
+    "ticker": "RVTY",
+    "region": "USA",
+    "price": 158.77,
+    "vcp": 6.56,
+    "highDist": 0.0,
+    "volRatio": 0.62,
+    "history": [
+      150.87,
+      155.94,
+      156.54,
+      157.29,
+      158.77
+    ]
+  },
+  {
+    "rank": 10,
+    "score": 91.71,
+    "ticker": "WAT",
+    "region": "USA",
+    "price": 453.67,
+    "vcp": 7.59,
+    "highDist": -0.83,
+    "volRatio": 1.02,
+    "history": [
+      434.27,
+      442.83,
+      457.47,
+      455.59,
+      453.67
+    ]
+  },
+  {
+    "rank": 11,
+    "score": 91.58,
+    "ticker": "NDSN",
+    "region": "USA",
+    "price": 318.84,
+    "vcp": 4.93,
+    "highDist": -4.66,
+    "volRatio": 1.06,
+    "history": [
+      323.88,
+      327.01,
+      331.54,
+      318.71,
+      318.84
+    ]
+  },
+  {
+    "rank": 12,
+    "score": 91.4,
+    "ticker": "SOLV",
+    "region": "USA",
+    "price": 85.41,
+    "vcp": 5.28,
+    "highDist": -7.6,
+    "volRatio": 1.67,
+    "history": [
+      85.05,
+      86.39,
+      86.67,
+      87.45,
+      85.41
+    ]
+  }
+];
+
+        function getTradingViewUrl(ticker, region) {
+            let symbol = ticker;
+            if (ticker.endsWith('.DE')) symbol = 'XETR:' + ticker.replace('.DE', '');
+            else if (ticker.endsWith('.AS')) symbol = 'AMEX:' + ticker.replace('.AS', '');
+            else if (ticker.endsWith('.PA')) symbol = 'EURONEXT:' + ticker.replace('.PA', '');
+            else if (ticker.endsWith('.L')) symbol = 'LSE:' + ticker.replace('.L', '');
+            else if (ticker.endsWith('.SW')) symbol = 'SIX:' + ticker.replace('.SW', '');
+            else if (ticker.endsWith('.HK')) symbol = 'HKEX:' + ticker.replace('.HK', '');
+            else if (ticker.endsWith('.T')) symbol = 'TSE:' + ticker.replace('.T', '');
+            return `https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`;
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('stockTableBody');
+            const statsBox = document.getElementById('stats-box');
+            tbody.innerHTML = '';
+
+            statsBox.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span><strong class="text-emerald-400">${data.length}</strong> Elite-Setups aktiv</span>
+                </div>
+            `;
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-gray-400">Keine Daten im Scan gefunden.</td></tr>`;
+                return;
+            }
+
+            data.forEach(stock => {
+                const history = stock.history || [];
+                let miniChart = '';
+                if (history.length > 1) {
+                    const min = Math.min(...history);
+                    const max = Math.max(...history);
+                    const range = max - min === 0 ? 1 : max - min;
+                    const points = history.map((val, idx) => {
+                        const x = (idx / (history.length - 1)) * 75;
+                        const y = 22 - ((val - min) / range) * 18;
+                        return `${x},${y}`;
+                    }).join(' ');
+                    miniChart = `<svg width="75" height="25" class="inline-block ml-auto"><polyline fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" points="${points}"/></svg>`;
+                }
+
+                let rankBadge = `<span class="font-bold text-gray-400 px-2">#${stock.rank}</span>`;
+                if (stock.rank === 1) rankBadge = `<span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 font-bold rounded-lg border border-amber-500/40 shadow-sm">🥇 #1</span>`;
+                if (stock.rank === 2) rankBadge = `<span class="px-2.5 py-1 bg-slate-300/20 text-slate-200 font-bold rounded-lg border border-slate-300/40 shadow-sm">🥈 #2</span>`;
+                if (stock.rank === 3) rankBadge = `<span class="px-2.5 py-1 bg-amber-700/20 text-amber-500 font-bold rounded-lg border border-amber-700/40 shadow-sm">🥉 #3</span>`;
+
+                const vcpTightClass = stock.vcp <= 5.0 ? 'text-emerald-400 font-bold' : 'text-gray-200';
+
+                let volBadge = `<span class="text-gray-400">${stock.volRatio.toFixed(2)}x</span>`;
+                if (stock.volRatio >= 1.5) {
+                    volBadge = `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">🔥 ${stock.volRatio.toFixed(2)}x</span>`;
+                } else if (stock.volRatio >= 1.2) {
+                    volBadge = `<span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-semibold">${stock.volRatio.toFixed(2)}x</span>`;
+                }
+
+                const tvUrl = getTradingViewUrl(stock.ticker, stock.region);
+
+                const row = `
+                    <tr class="hover:bg-slate-800/60 transition duration-150">
+                        <td class="p-4">${rankBadge}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 bg-slate-800 text-xs rounded text-gray-300 border border-slate-700 font-medium">${stock.region}</span></td>
+                        <td class="p-4 font-bold text-base">
+                            <a href="${tvUrl}" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1.5 group">
+                                <span>${stock.ticker}</span>
+                                <svg class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            </a>
+                        </td>
+                        <td class="p-4 font-semibold text-gray-100">${stock.price.toFixed(2)}</td>
+                        <td class="p-4 ${vcpTightClass}">${stock.vcp.toFixed(2)}%</td>
+                        <td class="p-4 ${stock.highDist >= -2 ? 'text-emerald-400 font-bold' : 'text-gray-300'}">${stock.highDist.toFixed(2)}%</td>
+                        <td class="p-4">${volBadge}</td>
+                        <td class="p-4 text-right">${miniChart}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        renderTable(stocksData);
+    </script>
+</body>
+</html>
